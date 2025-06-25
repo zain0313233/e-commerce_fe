@@ -4,10 +4,14 @@ import { Eye, EyeOff, Mail, Lock, ShoppingBag, ArrowRight } from "lucide-react";
 import axios from "axios";
 import { useUser } from "@/context/UserContext";
 import { useRouter } from "next/navigation";
+import AlertBox from "../utils/AlertBox";
+import { resolve } from "styled-jsx/css";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
+  const [alert, setAlert] = useState(null);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -43,6 +47,14 @@ export default function Login() {
       [e.target.name]: e.target.value
     });
   };
+  const delay=({timeperiod})=>{
+    return new Promise ((resolve,reject)=>{
+      setTimeout(() => {
+        resolve();
+      }, timeperiod);
+    })
+
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,13 +77,28 @@ export default function Login() {
       if (loginresponse.status === 200) {
         const { user, access_token } = loginresponse.data;
         login(user, access_token);
+        setAlert({
+          success: true,
+          error: false,
+          msg: "Login successful! Redirecting..."
+        });
+        delay({timeperiod: 2000});
         router.push('/');
       } else {
         throw new Error("Login failed. Please check your credentials.");
       }
     } catch (error) {
+      setIsSubmitting(false);
+      setAlert({
+        success: false,
+        error: true,
+        msg: error.response?.data?.message || "Login failed. Please try again."
+      });
       console.error("Login failed:", error);
     }
+  };
+  const closeAlert = () => {
+    setAlert(null);
   };
 
   return (
@@ -267,6 +294,16 @@ export default function Login() {
           </a>
         </div>
       </div>
+      {alert && (
+        <AlertBox
+          success={alert.success}
+          error={alert.error}
+          msg={alert.msg}
+          onClose={closeAlert}
+          autoClose={true}
+          duration={3000}
+        />
+      )}
     </div>
   );
 }

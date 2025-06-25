@@ -2,14 +2,12 @@
 import React, {useState,useEffect} from 'react'
 import { Search, User, HelpCircle, ShoppingCart, X } from 'lucide-react'
 import SearchBar from './searchBar'
+import { useRouter } from 'next/navigation'
 
 const Navbar = () => {
   const [showsearchbar, setShowSearchBar] = useState(false);
- 
-
-  
-
-  return (
+  const router = useRouter();
+ return (
     <>
       <div className="bg-blue-900 text-white text-center text-sm p-2 font-medium">
         Free Shipping On Orders Over $75. Easy Returns.
@@ -82,7 +80,9 @@ const Navbar = () => {
                 >
                   <Search size={20} />
                 </button>
-                <button className="text-gray-700 hover:text-gray-900 transition-colors duration-200 p-2 hover:bg-gray-100 rounded-full">
+                <button 
+                onClick={()=>{router.push('/Profile')}}
+                className="text-gray-700 hover:text-gray-900 transition-colors duration-200 p-2 hover:bg-gray-100 rounded-full">
                   <User size={20} />
                 </button>
                 <button className="text-gray-700 hover:text-gray-900 transition-colors duration-200 p-2 hover:bg-gray-100 rounded-full">
