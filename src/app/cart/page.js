@@ -12,8 +12,12 @@ const CartPage = () => {
     const router = useRouter()
     const { user, token } = useUser()
     const [cartItems, setCartItems] = useState([])
+    const [selectedProduct, setSelectedProduct] = useState(null)
+    const [selectedProductId, setSelectedProductId] = useState(null)
+    const [selectedCartQuantity,setselectedCartQuantity]=useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+   
     const [updatingItems, setUpdatingItems] = useState({})
 
     const fetchCartWithProducts = async () => {
@@ -65,7 +69,9 @@ const CartPage = () => {
                                         brand: product.brand,
                                         stock_quantity: product.stock_quantity,
                                         rating: product.rating,
-                                        discount_percentage: product.discount_percentage
+                                        discount_percentage: product.discount_percentage,
+                                        description:product.description,
+                                        stock_quantity:product.stock_quantity
                                     }
                                 }
                             }
@@ -101,82 +107,75 @@ const CartPage = () => {
             setLoading(false)
         }
     }
-    //  const buyProduct = async () => {
-    //     try {
-    //       setLoading(true);
-          
-    //       if (!selectedproductId) {
-    //         console.error("Product ID is not selected.");
-    //         alert("Product ID is missing!");
-    //         return;
-    //       }
-    
-    //       if (!product || !product.id) {
-    //         console.error("Product data is not loaded.");
-    //         alert("Product data is not available!");
-    //         return;
-    //       }
-    
-    //       const orderData = {
-    //         user_id: user.id, 
-    //         customer_email: "aown02322@gmail.com",
-    //         product_name: product.title,
-    //         product_image: product.image_url,
-    //         product_description: product.description,
-    //         product_id: selectedproductId,
-    //         total_price: parseFloat(product.price),
-    //         status: "pending",
-    //         quantity: 1,
-    //         shipping_address: "123 Main St, City, Country",
-    //         payment_method: "credit_card"
-    //       };
-    
-    //       console.log("Sending order data:", orderData);
-    
-    //       const orderResponse = await axios.post(
-    //         `http://localhost:3001/api/order/create-order`,
-    //         orderData,
-    //         {
-    //           headers: {
-    //             "Content-Type": "application/json"
-    //           }
-    //         }
-    //       );
-    
-    //       console.log("Order response:", orderResponse);
-    
-    //       if (orderResponse.status === 201 && orderResponse.data.url) {
-    //         console.log("Order created successfully:", orderResponse.data);
+    const selectProductForPurchase = (cartItemId) => {
+        const selectedItem = cartItems.find(item => item.id === cartItemId)
+        if (selectedItem) {
+            setSelectedProduct(selectedItem.product)
+            setSelectedProductId(selectedItem.product_id)
+        }
+
+      
+    }
+ 
+    const buyProduct = async (productid) => {
+        try {
+            setLoading(true);
             
+            await selectProductForPurchase(productid);
+
+            const orderData = {
+                user_id: user.id, 
+                customer_email: "aown02322@gmail.com",
+                product_name: selectedProduct.title,
+                product_image: selectedProduct.image_url,
+                product_description: selectedProduct.description,
+                product_id: selectedProductId,
+                total_price: parseFloat(selectedProduct.price),
+                status: "pending",
+                quantity: selectedCartQuantity,
+                shipping_address: "123 Main St, City, Country",
+                payment_method: "credit_card"
+            };
+
+            console.log("Sending order data:", orderData);
+
+            const orderResponse = await axios.post(
+                `http://localhost:3001/api/order/create-order`,
+                orderData,
+                {
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                }
+            );
+
+            console.log("Order response:", orderResponse);
+
+            if (orderResponse.status === 201 && orderResponse.data.url) {
+                console.log("Order created successfully:", orderResponse.data);
+                window.location.href = orderResponse.data.url;
+            } else {
+                console.error("Unexpected response:", orderResponse);
+                alert("Failed to create order. Please try again.");
+            }
             
-    //         window.location.href = orderResponse.data.url;
+        } catch (error) {
+            console.error("Error buying product:", error);
             
-           
-    //       } else {
-    //         console.error("Unexpected response:", orderResponse);
-    //         alert("Failed to create order. Please try again.");
-    //       }
-          
-    //     } catch (error) {
-    //       console.error("Error buying product:", error);
-          
-    //       if (error.response) {
-            
-    //         console.error("Server error:", error.response.data);
-    //         alert(`Order failed: ${error.response.data.message || 'Server error'}`);
-    //       } else if (error.request) {
-           
-    //         console.error("Network error:", error.request);
-    //         alert("Network error. Please check your connection.");
-    //       } else {
-           
-    //         console.error("Error:", error.message);
-    //         alert("An unexpected error occurred.");
-    //       }
-    //     } finally {
-    //       setLoading(false);
-    //     }
-    //   };
+            if (error.response) {
+                console.error("Server error:", error.response.data);
+                alert(`Order failed: ${error.response.data.message || 'Server error'}`);
+            } else if (error.request) {
+                console.error("Network error:", error.request);
+                alert("Network error. Please check your connection.");
+            } else {
+                console.error("Error:", error.message);
+                alert("An unexpected error occurred.");
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const updateQuantity = async (itemId, newQuantity) => {
         if (newQuantity < 1) return
@@ -204,6 +203,7 @@ const CartPage = () => {
                         item.id === itemId ? { ...item, quantity: newQuantity } : item
                     )
                 )
+               setselectedCartQuantity(newQuantity)
             }
         } catch (err) {
             console.error("Error updating quantity:", err)
@@ -266,6 +266,7 @@ const CartPage = () => {
             day: 'numeric'
         })
     }
+
 
     if (loading) {
         return (
@@ -415,6 +416,8 @@ const CartPage = () => {
                                                             <p className="text-xs text-gray-500 mt-1">
                                                                 Added on {formatDate(item.added_at)}
                                                             </p>
+
+                                                            
                                                         </div>
 
                                                        
@@ -448,7 +451,13 @@ const CartPage = () => {
                                                                 <Trash2 className="w-4 h-4" />
                                                                 <span>Remove</span>
                                                             </button>
+                                                            <button  
+                                                            onClick={() => {buyProduct(item.id),setselectedCartQuantity(item.quantity)}}
+                                                            className="flex-1 mt-16 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors duration-200">
+                                                              Buy Now
+                                                            </button> 
                                                         </div>
+
                                                     </div>
                                                 </div>
                                             </div>
