@@ -1,11 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Search, X } from "lucide-react";
+import { useUser } from '@/context/UserContext'
 import axios from "axios";
 
 const ProductPopup = ({ selectedproductId, setShowProductPopup }) => {
   const [product, setProduct] = useState({});
   const [loading, setLoading] = useState(false);
+  const { user, token } = useUser()
   
   const buyProduct = async () => {
     try {
@@ -24,7 +26,7 @@ const ProductPopup = ({ selectedproductId, setShowProductPopup }) => {
       }
 
       const orderData = {
-        user_id: 1, 
+        user_id: user.id, 
         customer_email: "aown02322@gmail.com",
         product_name: product.title,
         product_image: product.image_url,
@@ -83,6 +85,37 @@ const ProductPopup = ({ selectedproductId, setShowProductPopup }) => {
       setLoading(false);
     }
   };
+  const addtoCart =async ()=>{
+    try{
+       setLoading(true);
+      
+      if (!selectedproductId) {
+        console.error("Product ID is not selected.");
+        alert("Product ID is missing!");
+        return;
+      }
+        const cratData = {
+        user_id: user.id, 
+        product_id: selectedproductId,
+        quantity: 1,      
+      };
+      const cartResponse=await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/cart/add-to-cart`,cratData,{
+        headers:{
+           "Content-Type": "application/json"
+        }
+      });
+      if (cartResponse.status===200){
+        console.log("Added To successfully:", cartResponse.data);
+         setLoading(false);
+         setShowProductPopup(false);
+      }
+
+    }catch(error){
+      console.error('an error occure',error)
+    }finally{
+      setLoading(false);
+    }
+  }
 
   const fetchProducts = async () => {
     try {
@@ -158,7 +191,7 @@ const ProductPopup = ({ selectedproductId, setShowProductPopup }) => {
             <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
               <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl mb-4 overflow-hidden">
                 <img
-                  src={product.image_url || "/api/placeholder/300/300"}
+                  src={product.image_url}
                   alt={product.brand || "Product"}
                   className="w-full h-full object-cover"
                   onError={(e) => {
@@ -242,7 +275,8 @@ const ProductPopup = ({ selectedproductId, setShowProductPopup }) => {
                   >
                     {loading ? "Processing..." : "Buy Now"}
                   </button>
-                  <button 
+                  <button
+                  onClick={()=>{addtoCart()}} 
                     className="flex-1 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-105 border border-gray-300"
                     disabled={loading || (product.stock_quantity || 0) === 0}
                   >

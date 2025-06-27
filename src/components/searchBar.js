@@ -3,6 +3,7 @@ require("dotenv").config();
 import React, { useEffect ,useState} from "react";
 import { Search, X } from "lucide-react";
 import axios from "axios";
+import { useUser } from '@/context/UserContext'
 import ProductPopup from "./productpopup";
 
 const searchBar = ({
@@ -14,6 +15,7 @@ const searchBar = ({
   const [products, setProducts] = useState([]);
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [showProductPopup, setShowProductPopup] = useState(false);
+  const { user, token } = useUser()
 
   const fetchProducts = async () => {
     try{
@@ -56,6 +58,33 @@ const searchBar = ({
     }
     return () => document.removeEventListener("keydown", handleEsc);
   }, [showsearchbar]);
+   const addtoCart =async (selectedproductId)=>{
+      try{
+        
+        
+        if (!selectedproductId) {
+          console.error("Product ID is not selected.");
+          alert("Product ID is missing!");
+          return;
+        }
+          const cratData = {
+          user_id: user.id, 
+          product_id: selectedproductId,
+          quantity: 1,      
+        };
+        const cartResponse=await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/cart/add-to-cart`,cratData,{
+          headers:{
+             "Content-Type": "application/json"
+          }
+        });
+        if (cartResponse.status===200){
+          console.log("Added To successfully:", cartResponse.data);
+        }
+  
+      }catch(error){
+        console.error('an error occure',error)
+      }
+    }
 
   return (
     <>
@@ -203,7 +232,9 @@ const searchBar = ({
                           <button onClick={()=>{setShowProductPopup(true),setSelectedProductId(product.id)}} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors duration-200">
                             Buy Now
                           </button>
-                          <button className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium py-2 px-3 rounded-lg transition-colors duration-200">
+                          <button 
+                          onClick={()=>{addtoCart(product.id)}}
+                          className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium py-2 px-3 rounded-lg transition-colors duration-200">
                             Add to Cart
                           </button>
                         </div>
