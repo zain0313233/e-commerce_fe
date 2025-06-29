@@ -136,7 +136,7 @@ const Profile = () => {
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="w-full max-w-4xl mx-auto shadow-lg bg-white p-8 md:p-12 rounded-lg">
+                <div className="w-full max-w-4xl mx-auto shadow-lg bg-white p-8 md:p-12 rounded-lg">
                     <div className="text-center mb-8">
                         <h2 className="text-2xl font-bold text-gray-900 mb-2">
                             My Profile
@@ -333,7 +333,7 @@ const Profile = () => {
                         <div className="col-span-1 ">
                             <button
                             onClick={()=>{router.push('/orders')}}
-                                type="submit"
+                                
                                 disabled={loading}
                                 className="w-full bg-green-500 gap-3 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-400 transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2 group disabled:opacity-50 disabled:cursor-not-allowed"
                             ><ShoppingBasket />
@@ -345,7 +345,7 @@ const Profile = () => {
                            
                               <button
                                 onClick={()=>{router.push('/cart')}}
-                                type="submit"
+                                
                                 disabled={loading}
                                 className="w-full bg-red-500 text-white gap-3 py-3 px-4 rounded-lg font-medium hover:bg-red-400 transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2 group disabled:opacity-50 disabled:cursor-not-allowed"
                             > <ShoppingCart />
@@ -357,7 +357,7 @@ const Profile = () => {
                         
                         <div className="col-span-1 md:col-span-2">
                             <button
-                                type="submit"
+                               onClick={handleSubmit}
                                 disabled={loading}
                                 className="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 hover:shadow-lg flex items-center justify-center space-x-2 group disabled:opacity-50 disabled:cursor-not-allowed"
                             >
@@ -365,7 +365,7 @@ const Profile = () => {
                             </button>
                         </div>
                     </div>
-                </form>
+               </div>
             </div>
         </div>
         <EcommerceFooter/>

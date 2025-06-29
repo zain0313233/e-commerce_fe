@@ -54,22 +54,22 @@ const Navbar = () => {
             
             <div className="flex items-center space-x-8">
               <a
-                href="/"
+                href="/men"
                 className="text-gray-900 font-medium text-sm uppercase tracking-wide hover:underline hover:text-gray-700 transition-colors duration-200"
               >
                 MEN
               </a>
               <a
-                href="/"
+                href="/women"
                 className="text-gray-900 font-medium text-sm uppercase tracking-wide hover:underline hover:text-gray-700 transition-colors duration-200"
               >
                 WOMEN
               </a>
               <a
-                href="/"
+                href="/allproducts/shoes"
                 className="text-gray-900 font-medium text-sm uppercase tracking-wide hover:underline hover:text-gray-700 transition-colors duration-200"
               >
-                SOCKS
+                SHOES & Watches
               </a>
               <a
                 href="/"
@@ -90,10 +90,10 @@ const Navbar = () => {
 
             <div className="flex items-center space-x-6">
               <a
-                href="/"
+                href="/allproducts"
                 className="text-gray-900 font-medium text-sm uppercase tracking-wide hover:underline hover:text-gray-700 transition-colors duration-200"
               >
-                SUSTAINABILITY
+                All Products
               </a>
               <a
                 href="/"
