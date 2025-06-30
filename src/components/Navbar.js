@@ -96,7 +96,7 @@ const Navbar = () => {
                 All Products
               </a>
               <a
-                href="/"
+                href="/Products"
                 className="text-gray-900 font-medium text-sm uppercase tracking-wide hover:underline hover:text-gray-700 transition-colors duration-200"
               >
                My Products
