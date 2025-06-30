@@ -1,10 +1,11 @@
 "use client"
 import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 const InfoCard = () => {
   const [currentImage, setCurrentImage] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
-
+  const router = useRouter();
   const images = [
     '/Images/collection1.jpg',
     '/Images/collection2.jpg',
@@ -43,7 +44,9 @@ const InfoCard = () => {
           <p className="text-lg opacity-90">Explore the latest trends in fashion</p>
         </div>
         <div className="flex gap-3 justify-center mb-5">
-          <button className="bg-white text-black text-sm italic px-6 py-2 rounded font-medium hover:bg-gray-100 transition-colors">
+          <button 
+           onClick={()=>{router.push('/allproducts')}}
+          className="bg-white text-black text-sm italic px-6 py-2 rounded font-medium hover:bg-gray-100 transition-colors">
             Shop Now
           </button>
           <button className="bg-transparent border-2 border-white text-white text-sm italic px-6 py-2 rounded font-medium hover:bg-white hover:text-black transition-colors">

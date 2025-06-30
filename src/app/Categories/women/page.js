@@ -5,7 +5,7 @@ import EcommerceFooter from '@/components/EcommerceFooter'
 import axios from "axios";
 import { useUser } from '@/context/UserContext'
 import { useRouter } from 'next/navigation'
-import ProductPopup from "../../components/productpopup";
+import ProductPopup from "@/components/productpopup";
 
 const WomenProducts = () => {
   const [isdata, setisdata] = useState(false);

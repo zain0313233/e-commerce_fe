@@ -1,6 +1,9 @@
+"use client"
 import React from 'react'
+import { useRouter } from 'next/navigation'
 
 const Card = ({ image, title, subtittle }) => {
+   const router = useRouter();
   return (
     <div className="w-[400px] h-[600px] relative  rounded-xs overflow-hidden shadow-lg">
      
@@ -22,10 +25,14 @@ const Card = ({ image, title, subtittle }) => {
         
        
         <div className="flex gap-3 justify-center">
-          <button className="bg-white text-black text-sm italic px-6 py-2 rounded font-medium hover:bg-gray-100 transition-colors">
+          <button
+           onClick={()=>{router.push('/Categories/men')}}
+           className="bg-white text-black text-sm italic px-6 py-2 rounded font-medium hover:bg-gray-100 transition-colors">
             SHOP MEN
           </button>
-          <button className="bg-white text-black text-sm italic px-6 py-2 rounded font-medium hover:bg-gray-100 transition-colors">
+          <button 
+           onClick={()=>{router.push('/Categories/women')}}
+          className="bg-white text-black text-sm italic px-6 py-2 rounded font-medium hover:bg-gray-100 transition-colors">
             SHOP WOMEN
           </button>
         </div>

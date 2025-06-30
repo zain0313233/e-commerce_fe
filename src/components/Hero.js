@@ -1,10 +1,12 @@
 "use client"
 import React, { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 const Hero = () => {
   const [currentImage, setCurrentImage] = useState(0)
   const [isAnimating, setIsAnimating] = useState(false)
+  const router = useRouter();
   
   const images = [
     '/Images/E_Hero1.jpg',
@@ -136,7 +138,9 @@ const Hero = () => {
             <p className="text-xl mb-8 drop-shadow-md">
               Our limited-edition collection pairs breathability with versatility.
             </p>
-            <button className="bg-white text-gray-900 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-200 shadow-lg">
+            <button 
+            onClick={()=>{router.push('/allproducts')}}
+            className="bg-white text-gray-900 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors duration-200 shadow-lg">
               Shop Now
             </button>
           </div>

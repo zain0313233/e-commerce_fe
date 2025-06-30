@@ -54,25 +54,25 @@ const Navbar = () => {
             
             <div className="flex items-center space-x-8">
               <a
-                href="/men"
+                href="/Categories/men"
                 className="text-gray-900 font-medium text-sm uppercase tracking-wide hover:underline hover:text-gray-700 transition-colors duration-200"
               >
                 MEN
               </a>
               <a
-                href="/women"
+                href="/Categories/women"
                 className="text-gray-900 font-medium text-sm uppercase tracking-wide hover:underline hover:text-gray-700 transition-colors duration-200"
               >
                 WOMEN
               </a>
               <a
-                href="/allproducts/shoes"
+                href="/Categories/shoes"
                 className="text-gray-900 font-medium text-sm uppercase tracking-wide hover:underline hover:text-gray-700 transition-colors duration-200"
               >
                 SHOES & Watches
               </a>
               <a
-                href="/"
+                href="/allproducts/newarivals"
                 className="text-gray-900 font-medium text-sm uppercase tracking-wide hover:underline hover:text-gray-700 transition-colors duration-200"
               >
                 NEW ARRIVALS
@@ -99,13 +99,13 @@ const Navbar = () => {
                 href="/"
                 className="text-gray-900 font-medium text-sm uppercase tracking-wide hover:underline hover:text-gray-700 transition-colors duration-200"
               >
-                RERUN
+               My Products
               </a>
               <a
                 href="/"
                 className="text-gray-900 font-medium text-sm uppercase tracking-wide hover:underline hover:text-gray-700 transition-colors duration-200"
               >
-                STORES
+                HOME
               </a>
               
               <div className="flex items-center space-x-4 ml-4">
