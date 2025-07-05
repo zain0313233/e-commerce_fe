@@ -124,7 +124,7 @@ const Navbar = () => {
                   <HelpCircle size={20} />
                 </button>
                 <button
-                  onClick={()=>{router.push('/cart')}}
+                  onClick={()=>{router.push('/Profile/cart')}}
                  className="text-gray-700 hover:text-gray-900 relative transition-colors duration-200 p-2 hover:bg-gray-100 rounded-full">
                   <ShoppingCart size={20} />
                   {cartlength > 0 && (

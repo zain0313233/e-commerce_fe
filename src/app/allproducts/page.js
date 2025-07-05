@@ -28,7 +28,14 @@ const AllProducts = () => {
         console.error("No products found in the response.");
         return;
       }
-      setProducts(response.data.data);
+      setProducts(response.data.data.map((product) => ({
+    ...product,
+    tags: Array.isArray(product.tags)
+      ? product.tags
+      : typeof product.tags === "string"
+      ? product.tags.split(",").map((t) => t.trim())
+      : [], // fallback for null/other types
+  })));
       setisdata(true);
     } catch (error) {
       console.error("Error fetching products:", error);
