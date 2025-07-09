@@ -44,7 +44,10 @@ const Shoes = () => {
           if (response.data.success) {
             return {
               category,
-              products: response.data.data || [],
+              products: response.data.data.map((product)=>({
+        ...product,
+        tags:Array.isArray(product.tags)? product.tags :typeof product.tags === 'String' ? product.tags.split(',').map((t)=>t.trim()) : [] 
+      })),
               success: true
             };
           } else {
@@ -151,7 +154,10 @@ const Shoes = () => {
         throw new Error(response.data.message || "API request failed");
       }
       
-      const fetchedProducts = response.data.data || [];
+      const fetchedProducts = response.data.data.map((product)=>({
+        ...product,
+        tags:Array.isArray(product.tags)? product.tags :typeof product.tags === 'String' ? product.tags.split(',').map((t)=>t.trim()) : [] 
+      }))
       console.log('Products fetched:', fetchedProducts.length);
       
       

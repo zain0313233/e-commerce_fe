@@ -24,7 +24,6 @@ const MenProducts = () => {
       setError(null);
       
       console.log('Fetching products for category:', categoryName);
-      console.log('API URL:', `${process.env.NEXT_PUBLIC_API_URL}/api/product/get-by-category/${categoryName}`);
   
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/product/get-by-category/${categoryName}`, {
         headers: {
@@ -43,7 +42,10 @@ const MenProducts = () => {
         throw new Error(response.data.message || "API request failed");
       }
       
-      const fetchedProducts = response.data.data || [];
+      const fetchedProducts = response.data.data.map((product)=>({
+        ...product,
+        tags:Array.isArray(product.tags) ? product.tags : typeof product.tags === 'string' ? product.tags.split(",").map((t) => t.trim()) : [],
+      }));
       console.log('Products fetched:', fetchedProducts.length);
       
       setProducts(fetchedProducts);

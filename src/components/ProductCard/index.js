@@ -24,7 +24,7 @@ const ProductCard = () => {
     
   return (
     <>
-    <div className="grid grid-cols-3 gap-1 mt-12 px-9" >
+    <div className="md:grid md:grid-cols-3 hidden  gap-1 md:mt-12 mt-20 md:px-9 px-4" >
 {carddata.map((item,index)=>{
    return <Card 
           key={index}

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 const Card = ({ image, title, subtittle }) => {
    const router = useRouter();
   return (
-    <div className="w-[400px] h-[600px] relative  rounded-xs overflow-hidden shadow-lg">
+    <div className="md:w-[400px] md:h-[600px] w-screen h-auto  relative  rounded-xs overflow-hidden shadow-lg">
      
       <div className="absolute inset-0">
         <img 

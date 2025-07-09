@@ -139,9 +139,24 @@ const ProductPopup = ({ selectedproductId, setShowProductPopup }) => {
         console.error("No products found in the response.");
         return;
       }
+      
 
-      console.log("Product data:", response.data);
-      setProduct(response.data.data || {});
+        const productData = response.data.data || {};
+      
+     
+      if (productData.tags && typeof productData.tags === 'string') {
+       
+        try {
+          productData.tags = JSON.parse(productData.tags);
+        } catch (e) {
+         
+          productData.tags = productData.tags.split(',').map(tag => tag.trim());
+        }
+      } else if (!Array.isArray(productData.tags)) {
+       
+        productData.tags = [];
+      }
+      setProduct(productData);
       
     } catch (error) {
       console.error("Error fetching products:", error);

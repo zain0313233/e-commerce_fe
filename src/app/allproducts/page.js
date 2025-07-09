@@ -6,6 +6,7 @@ import axios from "axios";
 import { useUser } from '@/context/UserContext'
 import { useRouter } from 'next/navigation'
 import ProductPopup from "../../components/productpopup";
+import { productCache } from "../utils/cache";
 
 const AllProducts = () => {
   const [isdata, setisdata] = useState(false);
@@ -15,10 +16,20 @@ const AllProducts = () => {
   const [loading, setLoading] = useState(true);
   const { user, token } = useUser()
   const router = useRouter();
+  
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
+      const cacheKey = 'all_products';
+      const cacheddata=productCache.get(cacheKey);
+      if(cacheddata){
+        console.log('Using cached data for all_products');
+        setProducts(cacheddata)
+        setisdata(true)
+        setLoading(false);
+        return;
+      }
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/product/get-products`, {
         headers: {
           "Content-Type": "application/json",
@@ -28,14 +39,16 @@ const AllProducts = () => {
         console.error("No products found in the response.");
         return;
       }
-      setProducts(response.data.data.map((product) => ({
+      const allProducts=response.data.data.map((product) => ({
     ...product,
     tags: Array.isArray(product.tags)
       ? product.tags
       : typeof product.tags === "string"
       ? product.tags.split(",").map((t) => t.trim())
-      : [], // fallback for null/other types
-  })));
+      : [],
+  }))
+      productCache.set(cacheKey, allProducts);
+      setProducts(allProducts);
       setisdata(true);
     } catch (error) {
       console.error("Error fetching products:", error);
