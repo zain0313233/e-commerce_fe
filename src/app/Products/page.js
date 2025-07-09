@@ -3,6 +3,9 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useUser } from '@/context/UserContext';
 import SearchProducts from './searchProduct/page';
+import Navbar from '@/components/Navbar';
+import EcommerceFooter from '@/components/EcommerceFooter';
+import axios from 'axios';
 
 const ProductsPage = () => {
   const { user } = useUser();
@@ -15,42 +18,45 @@ const ProductsPage = () => {
   const productsPerPage = 12;
 
   useEffect(() => {
-    if (view === 'my-products') {
+    
+     if (user && user.id) {
       fetchProducts();
+    } else if (user === null) {
+     
+      setLoading(false);
+      setError('Please log in to view your products');
     }
-  }, [view, currentPage]);
+    
+  }, [user]);
 
   const fetchProducts = async () => {
-    setLoading(true);
-    setError('');
+  setLoading(true);
+  setError('');
+  
+  try {
+    let url = `${process.env.NEXT_PUBLIC_API_URL}/api/product/user-products`;
+    const response = await axios.get(`${url}/${user.id}`);
     
-    try {
-      let url = '/api/products';
-      const params = new URLSearchParams({
-        page: currentPage,
-        limit: productsPerPage
-      });
-
-      if (view === 'my-products' && user?.id) {
-        params.append('user_id', user.id);
-      }
-
-      const response = await fetch(`${url}?${params}`);
-      const result = await response.json();
-
-      if (response.ok) {
-        setProducts(result.products || []);
-        setTotalPages(Math.ceil((result.total || 0) / productsPerPage));
-      } else {
-        setError(result.message || 'Failed to fetch products');
-      }
-    } catch (err) {
-      setError('An error occurred while fetching products');
-      console.error('Error:', err);
-    } finally {
-      setLoading(false);
+    if (response.status === 200) {
+      setProducts(response.data.data.map((product) => ({
+         ...product,
+         tags: Array.isArray(product.tags)
+           ? product.tags
+           : typeof product.tags === "string"
+           ? product.tags.split(",").map((t) => t.trim())
+           : [],
+       }))); 
+      setTotalPages(Math.ceil((response.data.total || 0) / productsPerPage));
+    } else {
+      setError(response.data.message || 'Failed to fetch products');
     }
-  };
+  } catch (err) {
+    setError('An error occurred while fetching products');
+    console.error('Error:', err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const calculateDiscountedPrice = (price, discountPercentage) => {
     if (!discountPercentage) return null;
@@ -178,6 +184,8 @@ const ProductsPage = () => {
   }
 
   return (
+    <>
+    <Navbar/>
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -398,6 +406,8 @@ const ProductsPage = () => {
         )}
       </div>
     </div>
+    <EcommerceFooter/>
+    </>
   );
 };
 
