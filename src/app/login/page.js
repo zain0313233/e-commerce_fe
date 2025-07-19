@@ -109,7 +109,7 @@ export default function Login() {
             <div className="bg-black rounded-lg p-2 transform transition-transform hover:rotate-3">
               <ShoppingBag className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900">StorePro</h1>
+            <h1 className="text-3xl font-bold text-gray-900">ShopHub</h1>
           </div>
           <p className="text-gray-600 text-sm">
             Your premium e-commerce destination

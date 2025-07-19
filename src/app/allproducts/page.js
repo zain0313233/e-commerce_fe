@@ -31,8 +31,9 @@ const AllProducts = () => {
         return;
       }
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/product/get-products`, {
-        headers: {
+         headers: {
           "Content-Type": "application/json",
+           Authorization: `Bearer ${token || ''}`
         }
       });
       if (!response || !response.data) {

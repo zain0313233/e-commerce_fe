@@ -24,16 +24,25 @@ const searchBar = ({
         return;
       }
       const response = await axios.get(`http://localhost:3001/api/product/product-by-tag?tag=${searchValue}`, {
-        headers: {
+         headers: {
           "Content-Type": "application/json",
+           Authorization: `Bearer ${token || ''}`
         }
     });
       if (!response || !response.data) {
         console.error("No products found in the response.");
         return;
       }
-      setProducts(response.data.data);
+      setProducts(response.data.data.map((product) => ({
+         ...product,
+         tags: Array.isArray(product.tags)
+           ? product.tags
+           : typeof product.tags === "string"
+           ? product.tags.split(",").map((t) => t.trim())
+           : [],
+       })));
     }catch (error) {
+
       console.error("Error fetching products:", error);
 
     }

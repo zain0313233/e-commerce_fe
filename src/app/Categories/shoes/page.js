@@ -35,9 +35,10 @@ const Shoes = () => {
         try {
           console.log(`Fetching products for category: ${category}`);
           const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/product/get-by-category/${category}`, {
-            headers: {
-              "Content-Type": "application/json",
-            },
+             headers: {
+          "Content-Type": "application/json",
+           Authorization: `Bearer ${token || ''}`
+        },
             timeout: 10000
           });
           

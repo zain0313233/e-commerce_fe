@@ -17,6 +17,7 @@ const SearchProducts = () => {
     minRating: '',
     sortBy: 'title' // title, price, rating, created_at
   });
+  
 
   useEffect(() => {
     fetchProducts();

@@ -28,6 +28,7 @@ const MenProducts = () => {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/product/get-by-category/${categoryName}`, {
         headers: {
           "Content-Type": "application/json",
+           Authorization: `Bearer ${token || ''}`
         },
         timeout: 10000 // 10 second timeout
       });

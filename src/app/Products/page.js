@@ -8,7 +8,7 @@ import EcommerceFooter from '@/components/EcommerceFooter';
 import axios from 'axios';
 
 const ProductsPage = () => {
-  const { user } = useUser();
+  const { user,token } = useUser();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -35,7 +35,14 @@ const ProductsPage = () => {
   
   try {
     let url = `${process.env.NEXT_PUBLIC_API_URL}/api/product/user-products`;
-    const response = await axios.get(`${url}/${user.id}`);
+    const response = await axios.get(`${url}/${user.id}`,
+       {
+        headers: {
+          "Content-Type": "application/json",
+           Authorization: `Bearer ${token || ''}`
+        },
+       }
+    );
     
     if (response.status === 200) {
       setProducts(response.data.data.map((product) => ({

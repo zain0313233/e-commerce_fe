@@ -6,9 +6,10 @@ import Navbar from '@/components/Navbar';
 import EcommerceFooter from '@/components/EcommerceFooter';
 import axios from 'axios';
 
+
 const AddProduct = () => {
   const router = useRouter();
-  const { user } = useUser();
+  const { user,token } = useUser();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -113,7 +114,13 @@ const AddProduct = () => {
       
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/api/product/create-product`, 
-        formDataToSend
+        formDataToSend,
+       {
+         headers: {
+          "Content-Type": "application/json",
+           Authorization: `Bearer ${token || ''}`
+        },
+       }
    
       );
 
