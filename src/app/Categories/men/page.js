@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, memo, useCallback } from 'react'
 import Navbar from '@/components/Navbar'
 import EcommerceFooter from '@/components/EcommerceFooter'
 import axios from "axios";
@@ -7,7 +7,7 @@ import { useUser } from '@/context/UserContext'
 import { useRouter } from 'next/navigation'
 import ProductPopup from "@/components/productpopup";
 
-const MenProducts = () => {
+const MenProducts = memo(() => {
   const [isdata, setisdata] = useState(false);
   const [products, setProducts] = useState([]);
   const [selectedProductId, setSelectedProductId] = useState(null);
@@ -18,7 +18,7 @@ const MenProducts = () => {
   const router = useRouter();
   const categoryName = "men";
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -30,7 +30,7 @@ const MenProducts = () => {
           "Content-Type": "application/json",
            Authorization: `Bearer ${token || ''}`
         },
-        timeout: 10000 // 10 second timeout
+        timeout: 10000
       });
       
       console.log('Response received:', response);
@@ -60,11 +60,9 @@ const MenProducts = () => {
       if (error.code === 'ECONNABORTED') {
         errorMessage = "Request timeout - please check your connection";
       } else if (error.response) {
-        // Server responded with error status
         console.error('Server error response:', error.response.data);
         errorMessage = error.response.data?.message || `Server error: ${error.response.status}`;
       } else if (error.request) {
-        // Request was made but no response received
         console.error('No response received:', error.request);
         errorMessage = "Cannot connect to server - please check if the server is running";
       } else {
@@ -77,19 +75,18 @@ const MenProducts = () => {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token]);
 
   useEffect(() => {
-    // Only fetch if we have the necessary environment variable
     if (process.env.NEXT_PUBLIC_API_URL) {
       fetchProducts();
     } else {
       setError("API URL not configured");
       setLoading(false);
     }
-  }, [user, token])
+  }, [user, token, fetchProducts])
 
-  const addtoCart = async (selectedproductId) => {
+  const addtoCart = useCallback(async (selectedproductId) => {
     try {
       if (!user || !user.id) {
         alert("Please log in to add items to cart");
@@ -129,7 +126,16 @@ const MenProducts = () => {
       
       alert(errorMessage);
     }
-  }
+  }, [user]);
+
+  const handleBuyNow = useCallback((productId) => {
+    setShowProductPopup(true);
+    setSelectedProductId(productId);
+  }, []);
+
+  const handleClosePopup = useCallback(() => {
+    setShowProductPopup(false);
+  }, []);
 
   if (loading) {
     return (
@@ -236,16 +242,13 @@ const MenProducts = () => {
 
                       <div className="flex space-x-2 pt-2">
                         <button
-                          onClick={() => {
-                            setShowProductPopup(true);
-                            setSelectedProductId(product.id);
-                          }}
+                          onClick={() => handleBuyNow(product.id)}
                           className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2.5 px-4 rounded-lg transition-colors duration-200"
                         >
                           Buy Now
                         </button>
                         <button
-                          onClick={() => { addtoCart(product.id) }}
+                          onClick={() => addtoCart(product.id)}
                           disabled={product.stock_quantity === 0}
                           className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-medium py-2.5 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
@@ -276,13 +279,15 @@ const MenProducts = () => {
       {showProductPopup && (
         <ProductPopup
           selectedproductId={selectedProductId}
-          setShowProductPopup={setShowProductPopup}
+          setShowProductPopup={handleClosePopup}
         />
       )}
       
       <EcommerceFooter />
     </>
   )
-}
+});
+
+MenProducts.displayName = 'MenProducts';
 
 export default MenProducts

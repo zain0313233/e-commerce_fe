@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState,memo,useCallback } from 'react'
 import Navbar from '@/components/Navbar'
 import EcommerceFooter from '@/components/EcommerceFooter'
 import axios from "axios";
@@ -7,7 +7,7 @@ import { useUser } from '@/context/UserContext'
 import { useRouter } from 'next/navigation'
 import ProductPopup from "@/components/productpopup";
 
-const Shoes = () => {
+const Shoes = memo(() => {
   const [isdata, setisdata] = useState(false);
   const [products, setProducts] = useState([]);
   const [selectedProductId, setSelectedProductId] = useState(null);
@@ -23,7 +23,7 @@ const Shoes = () => {
     "watches"
   ];
 
-  const fetchProductsForAllCategories = async () => {
+  const fetchProductsForAllCategories = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -128,9 +128,9 @@ const Shoes = () => {
     } finally {
       setLoading(false);
     }
-  }
+  },[token])
 
-  const fetchProductsForSingleCategory = async (category) => {
+  const fetchProductsForSingleCategory = useCallback(async (category) => {
     try {
       setLoading(true);
       setError(null);
@@ -193,7 +193,7 @@ const Shoes = () => {
     } finally {
       setLoading(false);
     }
-  }
+  },[token])
 
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_API_URL) {
@@ -208,7 +208,7 @@ const Shoes = () => {
     }
   }, [user, token, activeCategory])
 
-  const addtoCart = async (selectedproductId) => {
+  const addtoCart = useCallback(async (selectedproductId) => {
     try {
       if (!user || !user.id) {
         alert("Please log in to add items to cart");
@@ -248,7 +248,11 @@ const Shoes = () => {
       
       alert(errorMessage);
     }
-  }
+  }, [user]);
+    const handleBuyNow= useCallback((productId) => {
+      setShowProductPopup(true);
+  setSelectedProductId(productId);
+  },[])
 
   const filteredProducts = activeCategory === 'all' 
     ? products 
@@ -403,10 +407,7 @@ const Shoes = () => {
 
                       <div className="flex space-x-2 pt-2">
                         <button
-                          onClick={() => {
-                            setShowProductPopup(true);
-                            setSelectedProductId(product.id);
-                          }}
+                          onClick={() => handleBuyNow(product.id)}
                           className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2.5 px-4 rounded-lg transition-colors duration-200"
                         >
                           Buy Now
@@ -459,6 +460,7 @@ const Shoes = () => {
       <EcommerceFooter />
     </>
   )
-}
+})
+Shoes.displayName = "Shoes";
 
 export default Shoes

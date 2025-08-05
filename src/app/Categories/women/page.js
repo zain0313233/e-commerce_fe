@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState,memo,useCallback } from 'react'
 import Navbar from '@/components/Navbar'
 import EcommerceFooter from '@/components/EcommerceFooter'
 import axios from "axios";
@@ -7,7 +7,7 @@ import { useUser } from '@/context/UserContext'
 import { useRouter } from 'next/navigation'
 import ProductPopup from "@/components/productpopup";
 
-const WomenProducts = () => {
+const WomenProducts = memo(() => {
   const [isdata, setisdata] = useState(false);
   const [products, setProducts] = useState([]);
   const [selectedProductId, setSelectedProductId] = useState(null);
@@ -18,7 +18,7 @@ const WomenProducts = () => {
   const router = useRouter();
   const categoryName = "beauty";
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -78,7 +78,7 @@ const WomenProducts = () => {
     } finally {
       setLoading(false);
     }
-  }
+  },[token])
 
   useEffect(() => {
    
@@ -88,9 +88,9 @@ const WomenProducts = () => {
       setError("API URL not configured");
       setLoading(false);
     }
-  }, [user, token])
+  }, [user, token, fetchProducts])
 
-  const addtoCart = async (selectedproductId) => {
+  const addtoCart = useCallback(async (selectedproductId) => {
     try {
       if (!user || !user.id) {
         alert("Please log in to add items to cart");
@@ -130,7 +130,12 @@ const WomenProducts = () => {
       
       alert(errorMessage);
     }
-  }
+  },[user])
+
+  const handleBuyNow= useCallback((productId) => {
+      setShowProductPopup(true);
+  setSelectedProductId(productId);
+  },[])
 
   if (loading) {
     return (
@@ -237,10 +242,7 @@ const WomenProducts = () => {
 
                       <div className="flex space-x-2 pt-2">
                         <button
-                          onClick={() => {
-                            setShowProductPopup(true);
-                            setSelectedProductId(product.id);
-                          }}
+                         onClick={() => handleBuyNow(product.id)}
                           className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2.5 px-4 rounded-lg transition-colors duration-200"
                         >
                           Buy Now
@@ -284,6 +286,7 @@ const WomenProducts = () => {
       <EcommerceFooter />
     </>
   )
-}
+})
+WomenProducts.displayName = 'WomenProducts';
 
 export default WomenProducts
