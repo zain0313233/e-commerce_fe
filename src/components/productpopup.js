@@ -3,11 +3,18 @@ import React, { useEffect, useState } from "react";
 import { Search, X } from "lucide-react";
 import { useUser } from '@/context/UserContext'
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 const ProductPopup = ({ selectedproductId, setShowProductPopup }) => {
   const [product, setProduct] = useState({});
   const [loading, setLoading] = useState(false);
   const { user, token } = useUser()
+  const router = useRouter();
+   useEffect(() => {
+      if (!user || !token) {
+        router.push('/login');
+      }
+    }, [user, token, router]);
   
   const buyProduct = async () => {
     try {
@@ -46,7 +53,9 @@ const ProductPopup = ({ selectedproductId, setShowProductPopup }) => {
         orderData,
         {
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}` 
+
           }
         }
       );
@@ -101,7 +110,8 @@ const ProductPopup = ({ selectedproductId, setShowProductPopup }) => {
       };
       const cartResponse=await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/cart/add-to-cart`,cratData,{
         headers:{
-           "Content-Type": "application/json"
+           "Content-Type": "application/json",
+           Authorization: `Bearer ${token}`
         }
       });
       if (cartResponse.status===200){
@@ -130,7 +140,8 @@ const ProductPopup = ({ selectedproductId, setShowProductPopup }) => {
         `http://localhost:3001/api/product/product-by-id?id=${selectedproductId}`,
         {
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
           }
         }
       );
