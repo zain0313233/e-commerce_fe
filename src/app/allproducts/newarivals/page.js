@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState,memo,useCallback } from 'react'
 import Navbar from '@/components/Navbar'
 import EcommerceFooter from '@/components/EcommerceFooter'
 import axios from "axios";
@@ -7,8 +7,9 @@ import { useUser } from '@/context/UserContext'
 import { useRouter } from 'next/navigation'
 import ProductPopup from "@/components/productpopup";
 import { productCache } from "../../utils/cache";
+import { use } from 'react/cjs/react.development';
 
-const NewArivals = () => {
+const NewArivals = memo(() => {
   const [isdata, setisdata] = useState(false);
   const [products, setProducts] = useState([]);
   const [selectedProductId, setSelectedProductId] = useState(null);
@@ -17,7 +18,7 @@ const NewArivals = () => {
   const { user, token } = useUser()
   const router = useRouter();
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       const cacheKey = 'new_Arivals';
@@ -55,13 +56,13 @@ const NewArivals = () => {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token]);
 
   useEffect(() => {
       fetchProducts();
-  }, [user, token])
+  }, [user, token, fetchProducts]);
 
-  const addtoCart = async (selectedproductId) => {
+  const addtoCart = useCallback(async (selectedproductId) => {
     try {
       if (!selectedproductId) {
         console.error("Product ID is not selected.");
@@ -86,7 +87,15 @@ const NewArivals = () => {
       console.error('An error occurred:', error)
       alert("Failed to add product to cart!");
     }
-  }
+  }, [user]);
+   const handleBuyNow = useCallback((productId) => {
+      setShowProductPopup(true);
+      setSelectedProductId(productId);
+    }, []);
+  
+    const handleClosePopup = useCallback(() => {
+      setShowProductPopup(false);
+    }, []);
 
   if (loading) {
     return (
@@ -175,10 +184,7 @@ const NewArivals = () => {
                     
                       <div className="flex space-x-2 pt-2">
                         <button
-                          onClick={() => {
-                            setShowProductPopup(true);
-                            setSelectedProductId(product.id);
-                          }}
+                          onClick={() => handleBuyNow(product.id)}
                           className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2.5 px-4 rounded-lg transition-colors duration-200"
                         >
                           Buy Now
@@ -217,13 +223,15 @@ const NewArivals = () => {
       {showProductPopup && (
         <ProductPopup
           selectedproductId={selectedProductId}
-          setShowProductPopup={setShowProductPopup}
+          setShowProductPopup={handleClosePopup}
         />
       )}
       
       <EcommerceFooter />
     </>
   )
-}
+})
+
+NewArivals.displayName = "NewArivals";
 
 export default NewArivals

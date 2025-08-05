@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState,memo,useCallback } from 'react'
 import Navbar from '@/components/Navbar'
 import EcommerceFooter from '@/components/EcommerceFooter'
 import axios from "axios";
@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 import ProductPopup from "../../components/productpopup";
 import { productCache } from "../utils/cache";
 
-const AllProducts = () => {
+const AllProducts = memo(() => {
   const [isdata, setisdata] = useState(false);
   const [products, setProducts] = useState([]);
   const [selectedProductId, setSelectedProductId] = useState(null);
@@ -18,7 +18,7 @@ const AllProducts = () => {
   const router = useRouter();
   
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       const cacheKey = 'all_products';
@@ -56,13 +56,13 @@ const AllProducts = () => {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token]);
 
   useEffect(() => {
       fetchProducts();
-  }, [user, token])
+  }, [user, token, fetchProducts]);
 
-  const addtoCart = async (selectedproductId) => {
+  const addtoCart = useCallback(async (selectedproductId) => {
     try {
       if (!selectedproductId) {
         console.error("Product ID is not selected.");
@@ -87,7 +87,7 @@ const AllProducts = () => {
       console.error('An error occurred:', error)
       alert("Failed to add product to cart!");
     }
-  }
+  }, [user.id]);
 
   if (loading) {
     return (
@@ -225,6 +225,8 @@ const AllProducts = () => {
       <EcommerceFooter />
     </>
   )
-}
+})
+
+AllProducts.displayName = "AllProducts";
 
 export default AllProducts

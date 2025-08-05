@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useState,memo,useCallback } from 'react'
+import React, { useEffect, useState, memo, useCallback, useMemo } from 'react'
 import Navbar from '@/components/Navbar'
 import EcommerceFooter from '@/components/EcommerceFooter'
 import axios from "axios";
@@ -18,10 +18,10 @@ const Shoes = memo(() => {
   const { user, token } = useUser()
   const router = useRouter();
   
-  const categories = [
+  const categories = useMemo(() => [
     "Shoes",
     "watches"
-  ];
+  ], []);
 
   const fetchProductsForAllCategories = useCallback(async () => {
     try {
@@ -128,7 +128,7 @@ const Shoes = memo(() => {
     } finally {
       setLoading(false);
     }
-  },[token])
+  },[token, categories])
 
   const fetchProductsForSingleCategory = useCallback(async (category) => {
     try {
@@ -193,7 +193,7 @@ const Shoes = memo(() => {
     } finally {
       setLoading(false);
     }
-  },[token])
+  },[])
 
   useEffect(() => {
     if (process.env.NEXT_PUBLIC_API_URL) {
@@ -206,7 +206,7 @@ const Shoes = memo(() => {
       setError("API URL not configured");
       setLoading(false);
     }
-  }, [user, token, activeCategory])
+  }, [user, token, activeCategory, fetchProductsForAllCategories, fetchProductsForSingleCategory])
 
   const addtoCart = useCallback(async (selectedproductId) => {
     try {
@@ -249,14 +249,48 @@ const Shoes = memo(() => {
       alert(errorMessage);
     }
   }, [user]);
-    const handleBuyNow= useCallback((productId) => {
-      setShowProductPopup(true);
-  setSelectedProductId(productId);
+
+  const handleBuyNow = useCallback((productId) => {
+    setShowProductPopup(true);
+    setSelectedProductId(productId);
   },[])
 
-  const filteredProducts = activeCategory === 'all' 
-    ? products 
-    : products.filter(product => product.category === activeCategory);
+  const handleSetActiveCategory = useCallback((category) => {
+    setActiveCategory(category);
+  }, []);
+
+  const handleRetry = useCallback(() => {
+    if (activeCategory === 'all') {
+      fetchProductsForAllCategories();
+    } else {
+      fetchProductsForSingleCategory(activeCategory);
+    }
+  }, [activeCategory, fetchProductsForAllCategories, fetchProductsForSingleCategory]);
+
+  const filteredProducts = useMemo(() => 
+    activeCategory === 'all' 
+      ? products 
+      : products.filter(product => product.category === activeCategory)
+  , [activeCategory, products]);
+
+  const categoryButtons = useMemo(() => 
+    categories.map((category) => {
+      const categoryCount = products.filter(p => p.category === category).length;
+      return (
+        <button
+          key={category}
+          onClick={() => handleSetActiveCategory(category)}
+          className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors duration-200 capitalize ${
+            activeCategory === category
+              ? 'bg-blue-600 text-white border-b-2 border-blue-600'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+          }`}
+        >
+          {category} ({categoryCount})
+        </button>
+      );
+    })
+  , [categories, products, activeCategory, handleSetActiveCategory]);
 
   if (loading) {
     return (
@@ -283,13 +317,7 @@ const Shoes = memo(() => {
             <h3 className="text-xl font-semibold text-gray-700 mb-2">Error Loading Products</h3>
             <p className="text-gray-500 mb-6">{error}</p>
             <button
-              onClick={() => {
-                if (activeCategory === 'all') {
-                  fetchProductsForAllCategories();
-                } else {
-                  fetchProductsForSingleCategory(activeCategory);
-                }
-              }}
+              onClick={handleRetry}
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-200"
             >
               Try Again
@@ -316,7 +344,7 @@ const Shoes = memo(() => {
           <div className="mb-6">
             <div className="flex flex-wrap gap-2 border-b border-gray-200">
               <button
-                onClick={() => setActiveCategory('all')}
+                onClick={() => handleSetActiveCategory('all')}
                 className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors duration-200 ${
                   activeCategory === 'all'
                     ? 'bg-blue-600 text-white border-b-2 border-blue-600'
@@ -325,22 +353,7 @@ const Shoes = memo(() => {
               >
                 All Categories ({products.length})
               </button>
-              {categories.map((category) => {
-                const categoryCount = products.filter(p => p.category === category).length;
-                return (
-                  <button
-                    key={category}
-                    onClick={() => setActiveCategory(category)}
-                    className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors duration-200 capitalize ${
-                      activeCategory === category
-                        ? 'bg-blue-600 text-white border-b-2 border-blue-600'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                    }`}
-                  >
-                    {category} ({categoryCount})
-                  </button>
-                );
-              })}
+              {categoryButtons}
             </div>
           </div>
 
@@ -434,13 +447,7 @@ const Shoes = memo(() => {
                 {activeCategory !== 'all' && ` in the ${activeCategory} category`} at the moment.
               </p>
               <button
-                onClick={() => {
-                  if (activeCategory === 'all') {
-                    fetchProductsForAllCategories();
-                  } else {
-                    fetchProductsForSingleCategory(activeCategory);
-                  }
-                }}
+                onClick={handleRetry}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-200"
               >
                 Refresh Products
