@@ -1,13 +1,15 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Search, X } from "lucide-react";
+import { Search, X, MessageCircleMore } from "lucide-react";
 import { useUser } from '@/context/UserContext'
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import ChatWindow from './ChatWindow';
 
 const ProductPopup = ({ selectedproductId, setShowProductPopup }) => {
   const [product, setProduct] = useState({});
   const [loading, setLoading] = useState(false);
+  const [showChat, setShowChat] = useState(false);
   const { user, token } = useUser()
   const router = useRouter();
    useEffect(() => {
@@ -235,9 +237,18 @@ const ProductPopup = ({ selectedproductId, setShowProductPopup }) => {
 
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-1">
+                  <div className="flex justify-between mb-2">
+                    <h3 className="text-xl font-bold text-gray-900 mb-1">
                     {product.brand || "Product Name"}
                   </h3>
+                  <button 
+                    onClick={() => setShowChat(true)}
+                    className="flex gap-1 text-blue-400 text-lg hover:text-blue-600 transition-colors items-center"
+                  > 
+                    <span className="text-lg font-bold text-gray-900">Chat with us</span>
+                    <MessageCircleMore />
+                  </button>
+                  </div>
                   <p className="text-2xl font-bold text-blue-600">
                     ${product.price || "0.00"}
                   </p>
@@ -314,6 +325,13 @@ const ProductPopup = ({ selectedproductId, setShowProductPopup }) => {
           </div>
         </div>
       </div>
+
+      {showChat && (
+        <ChatWindow 
+          supportUserId={product.seller_id || 1}
+          onClose={() => setShowChat(false)}
+        />
+      )}
     </>
   );
 };
