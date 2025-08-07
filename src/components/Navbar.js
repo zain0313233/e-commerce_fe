@@ -238,10 +238,7 @@ const Navbar = () => {
         )}
       </header>
 
-      {/* 
-        IMPORTANT: Move SellerChatDashboard OUTSIDE the header 
-        This prevents positioning issues and z-index conflicts
-      */}
+   
       <SellerChatDashboard />
     </>
   );

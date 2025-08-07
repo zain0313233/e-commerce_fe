@@ -9,6 +9,7 @@ const SellerChatDashboard = () => {
   const [chatRequests, setChatRequests] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
   const [showDashboard, setShowDashboard] = useState(false);
+   const [showChat, setShowChat] = useState(true);
   const { socket, isConnected } = useChat();
   const { user } = useUser();
 
@@ -220,7 +221,7 @@ const SellerChatWindow = ({ customerId, onClose }) => {
         <p className="text-center text-gray-500">
           Chat with Customer {customerId}
         </p>
-        {/* You can integrate the actual ChatWindow component here */}
+        <ChatWindow customerId={customerId} onClose={()=>{setShowChat(false)}} />
       </div>
     </div>
   );
