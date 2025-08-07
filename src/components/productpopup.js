@@ -328,7 +328,7 @@ const ProductPopup = ({ selectedproductId, setShowProductPopup }) => {
 
       {showChat && (
         <ChatWindow 
-          supportUserId={product.seller_id || 1}
+          supportUserId={product.user_id || 1}
           onClose={() => setShowChat(false)}
         />
       )}

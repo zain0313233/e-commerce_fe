@@ -22,11 +22,22 @@ export const ChatProvider = ({ children }) => {
       newSocket.on('connect', () => {
         console.log('Connected to chat server');
         setIsConnected(true);
+        
+        // Register user immediately after connection
+        newSocket.emit('register_user', {
+          userId: user.id,
+          userType: user.role === 'seller' ? 'seller' : 'customer'
+        });
       });
 
       newSocket.on('disconnect', () => {
         console.log('Disconnected from chat server');
         setIsConnected(false);
+      });
+
+      newSocket.on('new_chat_request', (data) => {
+        console.log('Received new chat request:', data);
+        // This will be handled by SellerChatDashboard
       });
 
       newSocket.on('receive_message', (messageData) => {
@@ -58,11 +69,12 @@ export const ChatProvider = ({ children }) => {
   const joinChat = (supportUserId) => {
     if (socket && user) {
       const roomData = {
-        userId: supportUserId || user.id,
-        userType: 'customer'
+        userId: user.id,
+        userType: user.role === 'seller' ? 'seller' : 'customer',
+        supportUserId: supportUserId
       };
       socket.emit('join_chat', roomData);
-      setCurrentRoom(`chat_${supportUserId || user.id}`);
+      setCurrentRoom(`chat_${supportUserId}_${user.id}`);
       setMessages([]);
     }
   };
