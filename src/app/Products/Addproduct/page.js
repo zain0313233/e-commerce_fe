@@ -117,7 +117,6 @@ const AddProduct = () => {
         formDataToSend,
        {
          headers: {
-          "Content-Type": "application/json",
            Authorization: `Bearer ${token || ''}`
         },
        }

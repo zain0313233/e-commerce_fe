@@ -245,7 +245,7 @@ const ProductPopup = ({ selectedproductId, setShowProductPopup }) => {
                     onClick={() => setShowChat(true)}
                     className="flex gap-1 text-blue-400 text-lg hover:text-blue-600 transition-colors items-center"
                   > 
-                    <span className="text-lg font-bold text-gray-900">Chat with us</span>
+                    <span className="text-lg font-bold text-blue-900">Chat with us</span>
                     <MessageCircleMore />
                   </button>
                   </div>
